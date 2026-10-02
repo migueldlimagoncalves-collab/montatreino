@@ -106,7 +106,7 @@
 <div class="card"><h2>Histórico</h2><div id="history"></div><button class="danger" onclick="clearHistory()">Apagar histórico</button></div>
 <div class="card"><h2>Backup</h2><div class="row"><button class="secondary" onclick="exportData()">Exportar dados</button><button class="secondary" onclick="importData()">Importar</button></div><div class="note">Os dados ficam armazenados no navegador. Faça um backup antes de trocar de aparelho ou limpar os dados do navegador.</div></div>
 </section>
-<div class="footer">MontaTreino • Smart Engine • protótipo PWA • armazenamento local</div>
+
 </div>
 
 <div class="modal" id="settings"><div class="sheet">
@@ -410,7 +410,7 @@ function saveWeightCheckin(){
 function renderHistory(){
  const h=S.history;document.getElementById("history").innerHTML=h.length?h.map(x=>`<div class="historyitem"><div><b>${x.day}</b><span>${x.goal} • ${x.records.length} séries</span></div><span>${new Date(x.date).toLocaleDateString("pt-BR")}</span></div>`).join(""):'<div class="empty">Nenhum treino registrado ainda.</div>';
 }
-function clearHistory(){if(confirm("Apagar todo o histórico?")){S.history=[];save();renderHistory();renderProgress();toast("Histórico apagado")}}
+function clearHistory(){if(confirm("Apagar todo o histórico de treinos e a evolução do peso corporal?")){S.history=[];S.weightHistory=[];S.lastSavedWorkoutSignature=null;save();renderHistory();renderProgress();toast("Histórico e evolução apagados")}}
 function exportData(){const b=new Blob([JSON.stringify(S,null,2)],{type:"application/json"}),u=URL.createObjectURL(b),a=document.createElement("a");a.href=u;a.download="montatreino-backup.json";a.click();URL.revokeObjectURL(u)}
 function importData(){const i=document.createElement("input");i.type="file";i.accept=".json";i.onchange=()=>{const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{S=JSON.parse(r.result);migrateState();save();setupOnboarding();renderProfileSummary();renderPlan();renderProgress();renderHistory();renderExercises();if(S.onboarded)hideInicioAfterCadastro();toast("Backup importado")}catch(e){toast("Arquivo inválido")}};r.readAsText(f)};i.click()}
 function openSettings(){
@@ -495,7 +495,7 @@ function validateProfile(){
 }
 function load(){
  const p=S.profile;
- [["name",p.name],["age",p.age],["level",p.level],["goal",p.goal],["days",p.days],["time",p.time]].forEach(([id,v])=>document.getElementById(id).value=v);
+ [["name",p.name],["age",p.age],["weight",p.weight||""],["height",p.height||""],["level",p.level],["goal",p.goal],["days",p.days],["time",p.time]].forEach(([id,v])=>{const el=document.getElementById(id);if(el)el.value=v});
  document.querySelectorAll("#place .chip").forEach(c=>c.classList.toggle("on",c.dataset.v===p.place));
  document.querySelectorAll("#equipment .chip").forEach(c=>c.classList.toggle("on",normalizeEquipment(p.equipment).includes(c.dataset.v)));
  document.querySelectorAll("#focus .chip").forEach(c=>c.classList.toggle("on",p.focus.includes(c.dataset.v)));
