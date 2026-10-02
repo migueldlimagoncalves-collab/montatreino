@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#08100d">
+<meta name="description" content="MontaTreino — gerador e diário de treinos de musculação.">
+
+<title>MontaTreino</title>
+<style>
+:root{--bg:#07100c;--panel:#0e1813;--panel2:#14221b;--line:#26392e;--text:#f3f8f4;--muted:#93a69b;--green:#65e58b;--green2:#28c96b;--yellow:#ffc76b;--red:#ff7777;--blue:#72b9ff;--shadow:0 20px 50px #0006}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 15% -10%,#173b26 0,#07100c 40%),#07100c;color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,input,select{font:inherit}button{cursor:pointer}.app{width:min(900px,100%);margin:auto;padding:16px 14px calc(90px + env(safe-area-inset-bottom))}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.logo{font-size:28px;font-weight:950;letter-spacing:-1.2px}.logo b{color:var(--green)}.icon{width:44px;height:44px;border:1px solid var(--line);border-radius:14px;background:#0d1712;color:var(--text)}
+.hero{border:1px solid #31523d;background:linear-gradient(145deg,#102319,#0e1712);padding:22px;border-radius:24px;box-shadow:var(--shadow);margin-bottom:13px}.hero h1{margin:0 0 8px;font-size:29px;line-height:1.05}.hero p{margin:0;color:var(--muted);line-height:1.55}
+.nav{position:sticky;top:6px;z-index:20;display:grid;grid-template-columns:repeat(5,1fr);gap:5px;padding:5px;background:#08100ddd;backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:17px;margin:12px 0}.nav button{border:0;background:transparent;color:var(--muted);padding:10px 3px;border-radius:12px;font-size:10px;font-weight:900}.nav button.active{background:var(--panel2);color:var(--green)}.nav.compact{grid-template-columns:repeat(4,1fr)}.nav button[style*="display: none"]{display:none!important}
+.view{display:none}.view.active{display:block}.card{background:rgba(14,24,19,.97);border:1px solid var(--line);border-radius:20px;padding:17px;margin-bottom:13px;box-shadow:0 9px 30px #0002}.card h2{margin:0 0 14px;font-size:19px}.card h3{font-size:14px;margin:17px 0 9px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field label{display:block;color:var(--muted);font-size:11px;margin:0 0 6px}.field input,.field select,.search{width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--panel2);color:var(--text);outline:0}.field input:focus,.field select:focus,.search:focus{border-color:var(--green)}
+.chips{display:flex;flex-wrap:wrap;gap:7px}.chip{border:1px solid var(--line);background:var(--panel2);color:var(--muted);border-radius:999px;padding:9px 12px;font-size:11px}.chip.on{border-color:#65e58b99;color:#caffd6;background:#65e58b18}
+.primary,.secondary,.danger{width:100%;padding:13px;border-radius:13px;font-weight:950;margin-top:12px}.primary{border:0;background:var(--green);color:#061009}.secondary{border:1px solid var(--line);background:var(--panel2);color:var(--text)}.danger{border:1px solid #ff777755;background:#ff777715;color:#ffaaaa}.row{display:flex;gap:8px}.row>*{flex:1}.note{color:var(--muted);font-size:11px;line-height:1.55;margin-top:12px}.pills{display:flex;gap:6px;flex-wrap:wrap}.pill{font-size:10px;border:1px solid #65e58b44;background:#65e58b12;color:#bff6cc;padding:6px 8px;border-radius:99px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.stat{padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--panel2)}.stat b{display:block;font-size:21px}.stat span{display:block;color:var(--muted);font-size:10px;margin-top:2px}
+.day{border:1px solid var(--line);border-radius:17px;overflow:hidden;margin:11px 0;background:#0a130f}.dayhead{padding:14px;background:#111d16;display:flex;justify-content:space-between;gap:8px;align-items:center}.dayhead strong{font-size:16px}.dayhead small{display:block;color:var(--muted);margin-top:3px}.ex{padding:13px 14px;border-top:1px solid #1e3026}.exhead{display:flex;justify-content:space-between;gap:8px}.exname{font-weight:850}.target{font-size:11px;color:var(--green);font-weight:900;white-space:nowrap}.meta{font-size:10px;color:var(--muted);margin-top:4px}.set{display:grid;grid-template-columns:30px 1fr 1fr 40px;gap:6px;align-items:center;margin-top:8px}.set>span{font-size:10px;color:var(--muted);text-align:center}.set input{width:100%;padding:9px;border:1px solid var(--line);border-radius:9px;background:#101b15;color:var(--text);text-align:center}.check{height:38px;border:1px solid var(--line);background:#101b15;color:var(--muted);border-radius:10px}.check.done{border-color:#65e58b;background:#65e58b1f;color:var(--green)}.restbar{padding:10px 14px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:10px}.restbar button{border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:9px;padding:7px 9px}
+.excard{border:1px solid var(--line);border-radius:16px;background:var(--panel2);padding:14px;margin:8px 0}.excard b{font-size:14px}.badge{font-size:9px;color:var(--muted);border:1px solid var(--line);padding:4px 7px;border-radius:99px}.excard p{color:var(--muted);font-size:11px;line-height:1.5;margin:7px 0}.search{margin-bottom:8px}.historyitem{display:flex;justify-content:space-between;gap:10px;padding:13px 0;border-bottom:1px solid #1e3026}.historyitem:last-child{border-bottom:0}.historyitem b{display:block;font-size:12px}.historyitem span{color:var(--muted);font-size:10px}
+.bar{height:9px;background:#1c2b23;border-radius:99px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--green2),var(--green));width:0}.chartrow{margin:11px 0}.chartrow header{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:5px}
+.modal{position:fixed;inset:0;background:#000a;display:none;align-items:flex-end;justify-content:center;z-index:40}.modal.open{display:flex}.sheet{width:min(900px,100%);max-height:88vh;overflow:auto;background:#0e1813;border:1px solid var(--line);border-radius:25px 25px 0 0;padding:18px}.timer{font-size:54px;font-weight:950;text-align:center;margin:15px 0}.timer small{display:block;color:var(--muted);font-size:11px;font-weight:500}
+.toast{position:fixed;z-index:60;left:50%;bottom:24px;transform:translate(-50%,30px);opacity:0;background:#edfff2;color:#061009;font-weight:900;font-size:11px;padding:11px 15px;border-radius:12px;transition:.25s}.toast.show{opacity:1;transform:translate(-50%,0)}
+.empty{border:1px dashed var(--line);padding:24px;border-radius:15px;text-align:center;color:var(--muted);font-size:12px}.small{font-size:10px;color:var(--muted)}
+@media(max-width:600px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.stat:last-child{grid-column:span 2}.hero h1{font-size:25px}.nav button{font-size:9px}}
+@media print{body{background:white;color:#111}.nav,.top button,.primary,.secondary,.danger,.footer{display:none!important}.view{display:none!important}.view#v-treino{display:block!important}.card,.day{background:white;color:#111;box-shadow:none;border:1px solid #ccc}.meta,.note,.dayhead small,.small{color:#555}}
+</style>
+<meta name="theme-color" content="#168a45"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Monta Treino"><link rel="manifest" href="manifest.json"><link rel="icon" href="icon.svg"><link rel="apple-touch-icon" sizes="192x192" href="icon-192.png"></head>
+<body>
+
+<div id="onboarding" style="position:fixed;inset:0;z-index:9999;background:#07100c;overflow:auto">
+<div style="max-width:760px;margin:auto;padding:24px 16px 40px">
+<div style="font-size:32px;font-weight:900;margin:12px 0">Monta<span style="color:#65e58b">Treino</span></div>
+<div class="note" style="margin-bottom:18px">Primeiro vamos conhecer você. Depois o app fica livre para uso normal.</div>
+<div class="card">
+<h2>👤 Seu cadastro</h2>
+<div class="grid">
+<div class="field"><label>Nome *</label><input id="on_name" placeholder="Seu nome"></div>
+<div class="field"><label>Idade *</label><input id="on_age" type="number" min="12" max="100" placeholder="Ex.: 18"></div> <div class="field"><label>Peso corporal *</label><input id="on_weight" type="number" min="25" max="300" step="0.1" placeholder="Ex.: 78 kg"></div>
+<div class="field"><label>Altura <span class="small">(opcional)</span></label><input id="on_height" type="number" min="100" max="250" step="0.1" placeholder="Ex.: 170 cm"></div>
+<div class="field"><label>Nível</label><select id="on_level"><option>Iniciante</option><option>Intermediário</option><option>Avançado</option></select></div>
+<div class="field"><label>Objetivo</label><select id="on_goal"><option>Hipertrofia</option><option>Força</option><option>Condicionamento</option><option>Manutenção</option></select></div>
+<div class="field"><label>Dias/semana</label><select id="on_days"><option value="2">2</option><option value="3" selected>3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option></select></div>
+<div class="field"><label>Tempo</label><select id="on_time"><option value="45">30–45 min</option><option value="60" selected>45–60 min</option><option value="75">60–75 min</option><option value="90">75+ min</option></select></div>
+</div>
+<h3>Local</h3><div id="on_place" class="chips"><button type="button" class="chip on" data-v="Academia">Academia</button><button type="button" class="chip" data-v="Casa">Casa</button><button type="button" class="chip" data-v="Peso corporal">Peso corporal</button></div>
+<h3>Equipamentos</h3><div id="on_equipment" class="chips"><button type="button" class="chip on" data-v="Pesos">Pesos</button><button type="button" class="chip on" data-v="Máquinas">Máquinas</button><button type="button" class="chip" data-v="Elásticos">Elásticos</button><button type="button" class="chip" data-v="Barra fixa">Barra fixa</button><button type="button" class="chip" data-v="Banco">Banco</button></div>
+<h3>Prioridades <span class="small">(opcional)</span></h3><div id="on_focus" class="chips"><button type="button" class="chip" data-v="Peito">Peito</button><button type="button" class="chip" data-v="Costas">Costas</button><button type="button" class="chip" data-v="Pernas">Pernas</button><button type="button" class="chip" data-v="Ombros">Ombros</button><button type="button" class="chip" data-v="Braços">Braços</button><button type="button" class="chip" data-v="Core">Core</button></div>
+<div class="note">📏 A altura é opcional. Se ficar em branco, o MontaTreino continua funcionando normalmente.</div><div class="note">⚖️ O peso corporal é obrigatório porque ajuda a personalizar o acompanhamento e a evolução do seu treino.</div>
+<button class="primary" onclick="finishOnboarding()">🚀 Criar meu perfil</button>
+</div></div></div>
+<div class="app">
+<header class="top"><div class="logo">Monta<b>Treino</b></div><button class="icon" onclick="openSettings()">⚙</button></header>
+<section class="hero"><h1>Treine com um plano feito para você.</h1><p>Informe seu objetivo, nível, rotina e equipamentos. O MontaTreino organiza uma divisão, registra suas séries e transforma seus treinos em histórico de evolução.</p></section>
+
+<nav class="nav">
+<button class="active" data-v="inicio">🏠<br>Início</button>
+<button data-v="treino">🏋️<br>Treino</button>
+<button data-v="exercicios">📚<br>Exercícios</button>
+<button data-v="progresso">📈<br>Progresso</button>
+<button data-v="historico">🗓️<br>Histórico</button>
+</nav>
+
+<section id="v-inicio" class="view active">
+<div class="card">
+<h2>Monte seu perfil</h2>
+<div class="grid">
+<div class="field"><label>Nome</label><input id="name" placeholder="Seu nome"></div>
+<div class="field"><label>Idade</label><input id="age" type="number" min="12" max="100" placeholder="Ex.: 18"></div><div class="field"><label>Altura <span class="small">(opcional)</span></label><input id="height" type="number" min="100" max="250" step="0.1" placeholder="Ex.: 170 cm"></div>
+<div class="field"><label>Nível</label><select id="level"><option>Iniciante</option><option>Intermediário</option><option>Avançado</option></select></div>
+<div class="field"><label>Objetivo</label><select id="goal"><option>Hipertrofia</option><option>Força</option><option>Condicionamento</option><option>Manutenção</option></select></div>
+<div class="field"><label>Dias por semana</label><select id="days"><option value="2">2</option><option value="3" selected>3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option></select></div>
+<div class="field"><label>Tempo disponível</label><select id="time"><option value="45">30–45 min</option><option value="60" selected>45–60 min</option><option value="75">60–75 min</option><option value="90">75+ min</option></select></div>
+</div>
+<h3>Local</h3><div id="place" class="chips"><button class="chip on" data-v="Academia">Academia</button><button class="chip" data-v="Casa">Casa</button><button class="chip" data-v="Peso corporal">Peso corporal</button></div>
+<h3>Equipamentos</h3><div id="equipment" class="chips"><button class="chip on" data-v="Pesos">Pesos</button><button class="chip on" data-v="Máquinas">Máquinas</button><button class="chip" data-v="Elásticos">Elásticos</button><button class="chip" data-v="Barra fixa">Barra fixa</button><button class="chip" data-v="Banco">Banco</button></div>
+<h3>Prioridades <span class="small">(opcional)</span></h3><div id="focus" class="chips"><button class="chip" data-v="Peito">Peito</button><button class="chip" data-v="Costas">Costas</button><button class="chip" data-v="Pernas">Pernas</button><button class="chip" data-v="Ombros">Ombros</button><button class="chip" data-v="Braços">Braços</button><button class="chip" data-v="Core">Core</button></div>
+<button class="primary" onclick="generate()">⚡ Montar meu treino</button><div class="note">🧠 <b>Motor inteligente:</b> considera objetivo, nível, frequência, tempo, equipamentos e prioridades. O histórico passa a alimentar sugestões de progressão.</div>
+<div class="note">O aplicativo é um protótipo educativo. Ele não substitui avaliação individual. Dor, lesão, limitações ou dúvidas de execução/carga devem ser avaliadas por profissional qualificado.</div>
+</div>
+<button id="installAppBtn" class="primary" style="display:none;margin:10px 0" onclick="installMontaTreino()">📲 Instalar MontaTreino</button><div id="homeStats"></div><div class="card" style="margin-top:12px"><h2>👤 Meu perfil</h2><div id="profilePills" class="pills"></div><div class="note">Edite suas informações pela ⚙️ no canto superior direito.</div></div>
+</section>
+
+<section id="v-treino" class="view">
+<div class="card"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><div><h2 style="margin-bottom:5px">Meu treino</h2><div id="subtitle" class="small"></div></div><button class="icon" onclick="generate()">↻</button></div><div id="pills" class="pills" style="margin-top:10px"></div>
+<div id="smartSummary" style="margin-top:11px"></div></div>
+<div id="plan"></div>
+<button class="primary" onclick="finish()">✓ Finalizar e registrar treino</button>
+<button class="secondary" onclick="window.print()">🖨 Salvar / imprimir</button>
+</section>
+
+<section id="v-exercicios" class="view">
+<div class="card"><h2>Biblioteca de exercícios</h2><input class="search" id="search" placeholder="Pesquisar exercício, músculo..." oninput="renderExercises()"><div id="library"></div></div>
+</section>
+
+<section id="v-progresso" class="view">
+<div class="card"><h2>Seu progresso</h2><div id="stats" class="stats"></div></div>
+<div class="card"><h2>⚖️ Evolução do peso corporal</h2><div class="row" style="align-items:end"><div class="field" style="margin:0"><label>Peso de hoje (kg)</label><input id="weightCheckin" type="number" min="25" max="300" step="0.1" inputmode="decimal" placeholder="Ex.: 78,0"></div><button class="secondary" style="width:auto;margin:0;white-space:nowrap" onclick="saveWeightCheckin()">Registrar</button></div><div id="weightEvolution" style="margin-top:12px"></div><div class="note">Registre seu peso quando quiser. O histórico ajuda a acompanhar a tendência sem alterar automaticamente o seu treino.</div></div>
+<div class="card"><h2>Volume por treino</h2><div id="volume"></div><div class="note">Volume estimado = carga × repetições. Use como referência para acompanhar a sua própria evolução.</div></div>
+<div class="card"><h2>🏆 Melhores cargas</h2><div id="best"></div><div class="note">Sua melhor carga registrada em cada exercício. O MontaTreino usa esses dados para sugerir progressões.</div></div>
+<div class="card"><h2>🎯 Próximo passo</h2><div id="nextStep"></div></div>
+</section>
+
+<section id="v-historico" class="view">
+<div class="card"><h2>Histórico</h2><div id="history"></div><button class="danger" onclick="clearHistory()">Apagar histórico</button></div>
+<div class="card"><h2>Backup</h2><div class="row"><button class="secondary" onclick="exportData()">Exportar dados</button><button class="secondary" onclick="importData()">Importar</button></div><div class="note">Os dados ficam armazenados no navegador. Faça um backup antes de trocar de aparelho ou limpar os dados do navegador.</div></div>
+</section>
+<div class="footer">MontaTreino • Smart Engine • protótipo PWA • armazenamento local</div>
+</div>
+
+<div class="modal" id="settings"><div class="sheet">
+<div style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0">Configurações</h2><button class="icon" onclick="closeSettings()">×</button></div>
+
+<div class="card" style="margin-top:13px">
+<h3>👤 Meu perfil</h3>
+<div class="grid">
+<div class="field"><label>Nome</label><input id="set_name" placeholder="Seu nome"></div>
+<div class="field"><label>Idade</label><input id="set_age" type="number" min="12" max="100"></div> <div class="field"><label>Peso corporal *</label><input id="set_weight" type="number" min="25" max="300" step="0.1" placeholder="kg"></div>
+<div class="field"><label>Altura <span class="small">(opcional)</span></label><input id="set_height" type="number" min="100" max="250" step="0.1" placeholder="cm"></div>
+<div class="field"><label>Nível</label><select id="set_level"><option>Iniciante</option><option>Intermediário</option><option>Avançado</option></select></div>
+<div class="field"><label>Objetivo</label><select id="set_goal"><option>Hipertrofia</option><option>Força</option><option>Condicionamento</option><option>Manutenção</option></select></div>
+<div class="field"><label>Dias por semana</label><select id="set_days"><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option></select></div>
+<div class="field"><label>Tempo por treino</label><select id="set_time"><option value="30">30 min</option><option value="45">45 min</option><option value="60">60 min</option><option value="75">75 min</option><option value="90">90 min</option></select></div>
+</div>
+<h4 style="margin:16px 0 8px">Local</h4>
+<div class="chips" id="set_place"><button type="button" class="chip" data-v="Academia">Academia</button><button type="button" class="chip" data-v="Casa">Casa</button><button type="button" class="chip" data-v="Ao ar livre">Ao ar livre</button></div>
+<h4 style="margin:16px 0 8px">Equipamentos</h4>
+<div class="chips" id="set_equipment"><button type="button" class="chip" data-v="Pesos">Pesos</button><button type="button" class="chip" data-v="Máquinas">Máquinas</button><button type="button" class="chip" data-v="Elásticos">Elásticos</button><button type="button" class="chip" data-v="Barra fixa">Barra fixa</button><button type="button" class="chip" data-v="Banco">Banco</button><button type="button" class="chip" data-v="Peso corporal">Peso corporal</button></div>
+<h4 style="margin:16px 0 8px">Prioridades</h4>
+<div class="chips" id="set_focus"><button type="button" class="chip" data-v="Peito">Peito</button><button type="button" class="chip" data-v="Costas">Costas</button><button type="button" class="chip" data-v="Pernas">Pernas</button><button type="button" class="chip" data-v="Ombros">Ombros</button><button type="button" class="chip" data-v="Braços">Braços</button><button type="button" class="chip" data-v="Core">Core</button></div>
+<button class="primary" onclick="saveProfileSettings()">💾 Salvar meu perfil</button>
+</div>
+
+<div class="card"><h3>⏱️ Descanso padrão</h3><select id="rest"><option value="45">45 s</option><option value="60" selected>60 s</option><option value="90">90 s</option><option value="120">120 s</option></select><button class="primary" onclick="saveSettings()">Salvar</button></div>
+<div class="card"><h3>📲 Instalação</h3><div class="small">Se o navegador oferecer “Adicionar à tela inicial”, o MontaTreino pode ser instalado como um app.</div></div>
+</div></div>
+<div class="modal" id="timerModal"><div class="sheet"><h2 style="text-align:center">Descanso</h2><div id="timer" class="timer">0:00<small>prepare a próxima série</small></div><div class="row"><button class="secondary" onclick="startTimer(30)">30s</button><button class="secondary" onclick="startTimer(60)">60s</button><button class="secondary" onclick="startTimer(90)">90s</button></div><button class="primary" onclick="closeTimer()">Fechar</button></div></div>
+<div id="toast" class="toast"></div>
+
+<script>
+const EX=[
+["Supino reto","Peito","Peito • composto","3","8–12",90,["Pesos","Máquinas","Banco"],"Empurre com controle, mantendo estabilidade dos ombros."],
+["Supino inclinado","Peito","Peito • composto","3","8–12",90,["Pesos","Máquinas","Banco"],"Controle a descida e evite perder a posição dos ombros."],
+["Crossover","Peito","Peito • isolador","2","10–15",60,["Máquinas"],"Movimento controlado e sem transformar a série em balanço."],
+["Flexão de braços","Peito","Peito • peso corporal","3","8–15",60,["Peso corporal"],"Mantenha tronco firme e amplitude confortável."],
+["Puxada frontal","Costas","Costas • puxada","3","8–12",90,["Máquinas"],"Puxe com controle e evite usar impulso excessivo."],
+["Remada baixa","Costas","Costas • remada","3","8–12",90,["Máquinas"],"Conduza o movimento com as costas e cotovelos."],
+["Remada unilateral","Costas","Costas • remada","2","10–12",75,["Pesos","Banco"],"Mantenha o tronco estável durante a execução."],
+["Barra fixa","Costas","Costas • peso corporal","3","5–10",120,["Barra fixa"],"Use amplitude segura e progressão compatível com seu nível."],
+["Agachamento","Pernas","Quadríceps • glúteos","3","6–10",120,["Pesos","Banco"],"Priorize técnica e amplitude confortável antes de aumentar carga."],
+["Leg press","Pernas","Quadríceps • glúteos","3","8–12",120,["Máquinas"],"Não deixe a lombar perder contato com o apoio."],
+["Mesa flexora","Pernas","Posterior de coxa","2","10–15",75,["Máquinas"],"Faça a fase de retorno de forma controlada."],
+["Panturrilha","Pernas","Panturrilhas","3","12–20",60,["Máquinas","Pesos"],"Use amplitude confortável e movimento controlado."],
+["Desenvolvimento","Ombros","Ombros • composto","3","8–12",90,["Pesos","Máquinas","Banco"],"Mantenha o tronco estável e não force amplitude dolorosa."],
+["Elevação lateral","Ombros","Deltoide lateral","3","10–15",60,["Pesos","Elásticos"],"Evite balanço e mantenha controle."],
+["Crucifixo inverso","Ombros","Deltoide posterior","2","12–15",60,["Pesos","Máquinas","Banco"],"Concentre-se no movimento dos braços e não no impulso."],
+["Rosca direta","Braços","Bíceps","3","8–12",75,["Pesos"],"Evite compensar com balanço do tronco."],
+["Rosca martelo","Braços","Bíceps/braquial","2","10–15",60,["Pesos"],"Mantenha os cotovelos estáveis."],
+["Tríceps na polia","Braços","Tríceps","3","8–12",75,["Máquinas"],"Controle o retorno e mantenha os cotovelos estáveis."],
+["Tríceps testa","Braços","Tríceps","2","10–15",75,["Pesos","Banco"],"Use carga que permita controlar a trajetória."],
+["Prancha","Core","Core • isometria","3","30–60 s",45,["Peso corporal"],"Mantenha tronco firme sem prender a respiração."],
+["Abdominal","Core","Core","3","10–20",45,["Peso corporal","Máquinas"],"Controle a amplitude e evite puxar o pescoço."]
+];
+
+const SPLITS={
+2:[["Full Body A",["Pernas","Peito","Costas","Core"]],["Full Body B",["Pernas","Costas","Ombros","Braços"]]],
+3:[["Full Body A",["Pernas","Peito","Costas"]],["Full Body B",["Pernas","Ombros","Costas"]],["Full Body C",["Pernas","Peito","Braços"]]],
+4:[["Upper A",["Peito","Costas","Ombros","Braços"]],["Lower A",["Pernas","Core"]],["Upper B",["Peito","Costas","Braços"]],["Lower B",["Pernas","Core"]]],
+5:[["Push",["Peito","Ombros","Braços"]],["Pull",["Costas","Braços","Core"]],["Legs",["Pernas","Core"]],["Upper",["Peito","Costas","Ombros"]],["Lower",["Pernas","Core"]]],
+6:[["Push A",["Peito","Ombros","Braços"]],["Pull A",["Costas","Braços"]],["Legs A",["Pernas","Core"]],["Push B",["Peito","Ombros","Braços"]],["Pull B",["Costas","Braços"]],["Legs B",["Pernas","Core"]]]
+};
+
+let S=JSON.parse(localStorage.getItem("montatreino_state")||"null")||{
+profile:{name:"",age:"",weight:"",height:"",level:"Iniciante",goal:"Hipertrofia",days:3,time:60,place:"Academia",equipment:["Pesos","Máquinas"],focus:[]},
+plan:null,history:[],weightHistory:[],rest:60
+};
+let timerId=null,left=0;
+S.profile.weight=S.profile.weight||"";S.weightHistory=S.weightHistory||[];
+
+function save(){localStorage.setItem("montatreino_state",JSON.stringify(S))}
+function esc(v){return String(v??"").replace(/"/g,"&quot;")}
+function toast(t){const e=document.getElementById("toast");e.textContent=t;e.classList.add("show");setTimeout(()=>e.classList.remove("show"),1800)}
+function show(v){document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.v===v));document.querySelectorAll(".view").forEach(x=>x.classList.toggle("active",x.id==="v-"+v));if(v==="exercicios")renderExercises();if(v==="progresso")renderProgress();if(v==="historico")renderHistory();window.scrollTo({top:0,behavior:"smooth"})}
+document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>show(b.dataset.v));
+document.querySelectorAll(".chip").forEach(c=>c.onclick=()=>c.classList.toggle("on"));
+function selected(id){return [...document.querySelectorAll("#"+id+" .chip.on")].map(x=>x.dataset.v)}
+function readProfile(){
+ S.profile={name:document.getElementById("name").value.trim(),age:document.getElementById("age").value,weight:document.getElementById("weight")?document.getElementById("weight").value:(S.profile.weight||""),height:document.getElementById("height")?document.getElementById("height").value:"",level:document.getElementById("level").value,goal:document.getElementById("goal").value,days:+document.getElementById("days").value,time:+document.getElementById("time").value,place:selected("place")[0]||"Academia",equipment:selected("equipment"),focus:selected("focus")};
+}
+function normalizeEquipment(list){
+ const out=new Set();
+ (Array.isArray(list)?list:[]).forEach(v=>{
+  const x=String(v).trim();
+  if(!x)return;
+  if(x==='Halteres'||x==='Barra'||x==='Anilhas'||x==='Pesos livres')out.add('Pesos');
+  else if(x==='Barra fixa')out.add('Barra fixa');
+  else out.add(x);
+ });
+ return [...out];
+}
+function equipmentReady(required){
+ const eq=new Set(normalizeEquipment(S.profile.equipment));
+ return required.some(r=>eq.has(r));
+}
+function allowed(ex){
+ const name=ex[0], place=S.profile.place||'Academia', eq=normalizeEquipment(S.profile.equipment);
+ const body=place==='Peso corporal' || eq.includes('Peso corporal');
+ // Regra central: local/equipamentos informados são restrições reais. Nunca usar fallback incompatível.
+ if(name==='Barra fixa') return eq.includes('Barra fixa');
+ if(name==='Supino reto'||name==='Supino inclinado') return eq.includes('Banco') && (eq.includes('Pesos')||eq.includes('Máquinas'));
+ if(name==='Remada unilateral'||name==='Tríceps testa') return eq.includes('Banco') && eq.includes('Pesos');
+ if(name==='Crossover'||name==='Puxada frontal'||name==='Remada baixa'||name==='Leg press'||name==='Mesa flexora'||name==='Tríceps na polia') return eq.includes('Máquinas');
+ if(name==='Agachamento') return eq.includes('Pesos') || body;
+ if(name==='Panturrilha') return eq.includes('Pesos') || eq.includes('Máquinas') || body;
+ if(name==='Desenvolvimento'||name==='Elevação lateral'||name==='Crucifixo inverso'||name==='Rosca direta'||name==='Rosca martelo') return eq.includes('Pesos')||eq.includes('Máquinas')||eq.includes('Elásticos');
+ if(name==='Flexão de braços'||name==='Prancha'||name==='Abdominal') return true; // peso corporal humano, sem equipamento
+ return ex[6].some(x=>eq.includes(x)) || (body && ex[6].includes('Peso corporal'));
+}
+function pool(group){
+ return EX.filter(e=>e[1]===group&&allowed(e));
+}
+function makeExercises(groups){
+ const out=[];const max=S.profile.time<=45?5:S.profile.time<=60?7:S.profile.time<=75?9:11;
+ groups.forEach(g=>{
+  let p=pool(g);
+  if(S.profile.focus.includes(g)) p=p.concat(p);
+  const count=(g==="Pernas"||S.profile.time>=75)?2:1;
+  for(let i=0;i<Math.min(count,p.length);i++){const e=p[i];out.push({name:e[0],group:e[1],desc:e[2],sets:+e[3],reps:e[4],rest:e[5],id:(crypto.randomUUID?.()||String(Date.now()+Math.random())),logs:Array.from({length:+e[3]},()=>({kg:"",reps:"",done:false}))})}
+ });
+ return out.slice(0,max);
+}
+function bodyContext(){
+ const w=+S.profile.weight||0,h=+S.profile.height||0;
+ const bmi=h&&w?w/((h/100)*(h/100)):0;
+ return {w,h,bmi};
+}
+function goalPrescription(){
+ const g=S.profile.goal;
+ if(g==="Força") return {sets:S.profile.level==="Iniciante"?3:4,reps:"4–8"};
+ if(g==="Condicionamento") return {sets:2,reps:"10–20"};
+ if(g==="Manutenção") return {sets:2,reps:"8–15"};
+ return {sets:S.profile.level==="Iniciante"?2:3,reps:"6–12"};
+}
+function latestExerciseRecord(name){
+ for(const h of S.history){
+   const rows=h.records.filter(r=>r.exercise===name && r.kg>0 && r.reps>0);
+   if(rows.length) return rows;
+ }
+ return null;
+}
+function suggestionFor(e){
+ const rows=latestExerciseRecord(e.name);
+ if(!rows){
+  const c=bodyContext();
+  if(e.group==="Pernas" && c.w>=90) return "Comece conservadoramente e priorize técnica; ajuste a carga conforme sua resposta.";
+  if(e.group==="Pernas" && c.w && c.w<60) return "Comece conservadoramente e ajuste a carga de acordo com sua técnica e repetições.";
+  return "Primeiro registro: escolha uma carga que permita terminar com técnica estável.";
+}
+ const nums=e.reps.match(/\d+/g)||["6","12"], min=+nums[0], max=+nums[nums.length-1];
+ const avg=rows.reduce((a,r)=>a+r.kg,0)/rows.length;
+ if(rows.every(r=>r.reps>=max)) return `Progressão sugerida: +${avg>=50?5:2.5} kg se a técnica continuar boa.`;
+ if(rows.some(r=>r.reps<min)) return "Mantenha a carga e tente alcançar a faixa de repetições.";
+ return "Mantenha a carga e tente acrescentar 1 repetição em alguma série.";
+}
+function weeklyGroupCounts(){
+ const counts={};
+ if(!S.plan)return counts;
+ S.plan.forEach(d=>d.exercises.forEach(e=>counts[e.group]=(counts[e.group]||0)+e.sets));
+ return counts;
+}
+function exerciseHistoryScore(name){
+ let n=0;
+ for(const h of S.history){
+  if(h.records.some(r=>r.exercise===name)) n++;
+ }
+ return n;
+}
+function smartPool(group,used,dayIndex){
+ let p=pool(group).filter(e=>!used.has(e[0]));
+ if(!p.length)p=pool(group);
+ if(!p.length)return [];
+ p.sort((a,b)=>{
+  const ah=exerciseHistoryScore(a[0]), bh=exerciseHistoryScore(b[0]);
+  const rotA=(ah+dayIndex)%Math.max(p.length,1), rotB=(bh+dayIndex)%Math.max(p.length,1);
+  return (ah*4+rotA)-(bh*4+rotB);
+ });
+ return p;
+}
+function makeSmartExercises(groups,dayIndex){
+ const out=[],used=new Set(),pres=goalPrescription();
+ const ordered=[...groups].sort((a,b)=>(S.profile.focus.includes(b)?1:0)-(S.profile.focus.includes(a)?1:0));
+ ordered.forEach((g,gi)=>{
+  const p=smartPool(g,used,dayIndex);
+  if(!p.length) return;
+  const count=(g==="Pernas"||S.profile.focus.includes(g)&&S.profile.time>=60)?2:1;
+  for(let n=0;n<Math.min(count,p.length);n++){
+   const e=p[(dayIndex*2+gi+n)%p.length]; used.add(e[0]);
+   const sets=Math.max(2,pres.sets+(S.profile.level==="Avançado"&&(g==="Pernas"||S.profile.focus.includes(g))?1:0));
+   out.push({name:e[0],group:e[1],desc:e[2],sets,reps:pres.reps,
+    rest:S.profile.goal==="Força"?120:S.profile.goal==="Condicionamento"?45:(e[5]||75),
+    id:(crypto.randomUUID?.()||String(Date.now()+Math.random())),
+    logs:Array.from({length:sets},()=>({kg:"",reps:"",done:false}))});
+  }
+ });
+ const max=S.profile.time<=45?5:S.profile.time<=60?7:S.profile.time<=75?9:11;
+ return out.slice(0,max);
+}
+function planQuality(){
+ const c=weeklyGroupCounts(),vals=Object.values(c), total=vals.reduce((a,b)=>a+b,0);
+ const focus=S.profile.focus.length?S.profile.focus.filter(g=>(c[g]||0)>0):[];
+ const balanced=vals.length>=3 && (Math.max(...vals)-Math.min(...vals)<=10 || S.profile.focus.length>0);
+ let text=balanced?'Distribuição equilibrada entre os grupos selecionados.':'Distribuição adaptada ao número de dias e ao seu objetivo.'; const ctx=bodyContext(); if(ctx.w)text+=` Peso corporal considerado: ${ctx.w} kg${ctx.h?` • altura: ${ctx.h} cm`:''}.`; 
+ if(focus.length)text+=` Prioridade: ${focus.join(', ')}.`;
+ return {total,text};
+}
+function generate(){
+ readProfile();
+ const splits=SPLITS[S.profile.days];
+ S.plan=splits.map((d,i)=>({name:d[0],groups:d[1],exercises:makeSmartExercises(d[1],i)}));
+ save();renderPlan();show("treino");toast("Plano inteligente montado 🧠💪");
+}
+function regenerateDay(di){
+ if(!S.plan?.[di])return;
+ const d=S.plan[di];
+ d.exercises=makeSmartExercises(d.groups,di+1);
+ save();renderPlan();toast("Dia regenerado com outra combinação 🔄");
+}
+function checkDay(di){
+ const d=S.plan?.[di]; if(!d)return;
+ d.exercises.forEach(e=>e.logs.forEach(l=>l.done=true)); save(); renderPlan(); toast("Séries marcadas como concluídas ✓");
+}
+function renderPlan(){
+ document.getElementById("subtitle").textContent=`${S.profile.level} • ${S.profile.goal} • ${S.profile.days} dias • ${S.profile.place} • ${S.profile.weight||"—"} kg`;
+ document.getElementById("pills").innerHTML=[S.profile.level,S.profile.goal,`${S.profile.days}x/semana`,S.profile.place,`${S.profile.weight||"—"} kg`].map(x=>`<span class="pill">${x}</span>`).join("");
+ const root=document.getElementById("plan");
+ if(!S.plan){root.innerHTML='<div class="card empty">Monte seu treino na tela Início.</div>';return}
+ const q=planQuality();
+ document.getElementById("smartSummary").innerHTML=`<div style="border:1px solid #26392e;border-radius:14px;padding:11px;background:#0a140f"><div style="font-weight:900;font-size:11px">🧠 Análise do plano</div><div class="small" style="margin-top:4px">${q.text} • ${q.total} séries planejadas/semana.</div><div class="small" style="margin-top:6px;color:#9feab0">✓ Exercícios filtrados pelos equipamentos informados.</div></div>`;
+ root.innerHTML=S.plan.map((d,di)=>`<div class="day"><div class="dayhead"><div><strong>${d.name}</strong><small>${d.groups.join(" • ")}</small></div><div style="display:flex;gap:6px;align-items:center"><span class="pill">${d.exercises.length} exercícios</span><button class="icon" style="width:34px;height:34px" title="Regenerar dia" onclick="regenerateDay(${di})">↻</button></div></div>
+ ${d.exercises.map((e,ei)=>`<div class="ex"><div class="exhead"><div><div class="exname">${e.name}</div><div class="meta">${e.desc} • descanso ${e.rest}s</div></div><div class="target">${e.sets} × ${e.reps}</div></div>
+ <div style="margin:7px 0 4px;color:#9feab0;font-size:10px">↗ ${suggestionFor(e)}</div>
+ ${e.logs.map((l,si)=>`<div class="set"><span>S${si+1}</span><input placeholder="kg" inputmode="decimal" value="${esc(l.kg)}" onchange="setlog(${di},${ei},${si},'kg',this.value)"><input placeholder="reps" inputmode="numeric" value="${esc(l.reps)}" onchange="setlog(${di},${ei},${si},'reps',this.value)"><button class="check ${l.done?'done':''}" onclick="toggle(${di},${ei},${si})">${l.done?"✓":"○"}</button></div>`).join("")}</div>`).join("")}
+ <div class="restbar"><span>⏱ Descanso sugerido: ${Math.max(...d.exercises.map(e=>e.rest),60)}s</span><div style="display:flex;gap:6px"><button onclick="startTimer(${Math.max(...d.exercises.map(e=>e.rest),60)})">Iniciar</button><button onclick="checkDay(${di})">Concluir</button></div></div></div>`).join("");
+}
+function setlog(di,ei,si,k,v){S.plan[di].exercises[ei].logs[si][k]=v;save()}
+function toggle(di,ei,si){S.plan[di].exercises[ei].logs[si].done=!S.plan[di].exercises[ei].logs[si].done;save();renderPlan()}
+function workoutSignature(){
+ return JSON.stringify((S.plan||[]).map(d=>({name:d.name,exercises:d.exercises.map(e=>({id:e.id,name:e.name,logs:e.logs}))})));
+}
+function finish(){
+ if(!S.plan){toast("Monte um treino primeiro");return}
+ const sig=workoutSignature();
+ if(S.lastSavedWorkoutSignature===sig){toast("Este treino já foi registrado ✓");return}
+ const now=new Date().toISOString(); let saved=0;
+ S.plan.forEach(d=>{
+  const records=[];
+  d.exercises.forEach(e=>e.logs.forEach(l=>{if(l.done||l.kg||l.reps)records.push({exercise:e.name,kg:+l.kg||0,reps:+l.reps||0})}));
+  if(records.length){S.history.unshift({date:now,day:d.name,goal:S.profile.goal,records});saved++;}
+ });
+ if(!saved){toast("Registre pelo menos uma série");return}
+ S.history=S.history.slice(0,200);S.lastSavedWorkoutSignature=sig;recordBodyWeight();save();renderProgress();renderHistory();toast(`${saved} treino(s) salvo(s) no histórico 🔥`);
+}
+function startTimer(sec){left=sec;document.getElementById("timerModal").classList.add("open");clearInterval(timerId);tick();timerId=setInterval(()=>{left--;tick();if(left<=0){clearInterval(timerId);navigator.vibrate?.([180,80,180]);toast("Descanso encerrado!");}},1000)}
+function tick(){document.getElementById("timer").innerHTML=`${Math.floor(left/60)}:${String(left%60).padStart(2,"0")}<small>respire e prepare a próxima série</small>`}
+function closeTimer(){clearInterval(timerId);document.getElementById("timerModal").classList.remove("open")}
+function renderExercises(){
+ const q=(document.getElementById("search")?.value||"").toLowerCase();
+ const a=EX.filter(e=>e.join(" ").toLowerCase().includes(q));
+ document.getElementById("library").innerHTML=a.map(e=>`<div class="excard"><div style="display:flex;justify-content:space-between;gap:8px"><b>${e[0]}</b><span class="badge">${e[1]}</span></div><p>${e[7]}</p><div class="pills"><span class="pill">${e[3]} × ${e[4]}</span><span class="pill">${e[5]}s descanso</span>${e[6].map(x=>`<span class="badge">${x}</span>`).join("")}</div></div>`).join("")||'<div class="empty">Nenhum exercício encontrado.</div>';
+}
+function renderProgress(){
+ const h=S.history,total=h.length,sets=h.reduce((a,x)=>a+x.records.length,0),volume=h.reduce((a,x)=>a+x.records.reduce((b,r)=>b+r.kg*r.reps,0),0);
+ const dates=new Set(h.map(x=>new Date(x.date).toISOString().slice(0,10))); let streak=0,d=new Date();
+ for(let i=0;i<30;i++){const k=d.toISOString().slice(0,10);if(dates.has(k)){streak++;d.setDate(d.getDate()-1)}else break}
+ document.getElementById("stats").innerHTML=`<div class="stat"><b>${total}</b><span>treinos</span></div><div class="stat"><b>${sets}</b><span>séries</span></div><div class="stat"><b>${Math.round(volume).toLocaleString("pt-BR")}</b><span>volume</span></div><div class="stat"><b>${streak}</b><span>dias seguidos</span></div>`;
+ const recent=h.slice(0,10).reverse(),vals=recent.map(x=>x.records.reduce((a,r)=>a+r.kg*r.reps,0)),max=Math.max(...vals,1);
+ document.getElementById("volume").innerHTML=recent.length?recent.map((x,i)=>`<div class="chartrow"><header><span>${new Date(x.date).toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"})} • ${x.day}</span><b>${Math.round(vals[i])} kg</b></header><div class="bar"><i style="width:${Math.max(2,vals[i]/max*100)}%"></i></div></div>`).join(""):'<div class="empty">Registre seus primeiros treinos para gerar o gráfico.</div>';
+
+ const wh=(S.weightHistory||[]).slice(0,12).reverse(), wvals=wh.map(x=>+x.weight||0), wmin=Math.min(...wvals,+(S.profile.weight||0)||0), wmax=Math.max(...wvals,+(S.profile.weight||0)||0,1);
+ const wrange=Math.max(wmax-wmin,1);
+ document.getElementById("weightEvolution").innerHTML=wh.length?`<div class="small" style="margin-bottom:8px">Peso corporal registrado ao longo do tempo</div>`+wh.map(x=>`<div class="chartrow"><header><span>${new Date(x.date+"T12:00:00").toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"})}</span><b>${(+x.weight).toLocaleString("pt-BR",{maximumFractionDigits:1})} kg</b></header><div class="bar"><i style="width:${Math.max(8,((+x.weight-wmin)/wrange)*100)}%"></i></div></div>`).join(""):`<div class="empty">Seu peso aparecerá aqui conforme você registrar treinos.</div>`;
+
+ const best={};
+ h.forEach(x=>x.records.forEach(r=>{if(r.exercise&&r.kg>0){best[r.exercise]=Math.max(best[r.exercise]||0,+r.kg)}}));
+ const arr=Object.entries(best).sort((a,b)=>b[1]-a[1]),mmax=Math.max(...arr.map(x=>x[1]),1);
+ document.getElementById("best").innerHTML=arr.length?`<div class="small" style="margin-bottom:8px">Melhor carga registrada por exercício</div>`+arr.slice(0,8).map(([k,v])=>`<div class="chartrow"><header><span>${k}</span><b>${v.toLocaleString("pt-BR",{maximumFractionDigits:1})} kg</b></header><div class="bar"><i style="width:${Math.max(6,v/mmax*100)}%"></i></div></div>`).join(""):'<div class="empty">Suas melhores cargas aparecerão quando você registrar treinos.</div>';
+ const last=S.history[0];
+ let next='';
+ if(!last) next='<div class="small">💡 Faça seu primeiro treino e registre carga + repetições. A partir daí o MontaTreino começa a aprender com seu desempenho.</div>';
+ else {
+   const records=last.records.filter(r=>r.kg>0&&r.reps>0);
+   const strongest=records.sort((a,b)=>(b.kg*b.reps)-(a.kg*a.reps))[0];
+   next=strongest?`<div class="small">🔥 No último treino, seu maior volume em uma série foi <b>${strongest.exercise}</b>: ${strongest.kg} kg × ${strongest.reps}. No próximo treino, procure repetir ou melhorar mantendo a técnica.</div>`:'<div class="small">💡 No próximo treino, registre peso e repetições para liberar sugestões de progressão.</div>';
+ }
+ document.getElementById("nextStep").innerHTML=next;
+ const wi=document.getElementById("weightCheckin"); if(wi)wi.value=S.profile.weight||'';
+}
+function saveWeightCheckin(){
+ const el=document.getElementById("weightCheckin"),w=+(el?.value||0);
+ if(!w||w<25||w>300){toast("Informe um peso válido");return}
+ S.profile.weight=String(w);
+ S.weightHistory=S.weightHistory||[];
+ const today=new Date().toISOString().slice(0,10);
+ const last=S.weightHistory[0];
+ if(!last||last.date!==today)S.weightHistory.unshift({date:today,weight:w}); else last.weight=w;
+ S.weightHistory=S.weightHistory.slice(0,180);
+ save();renderPlan();renderProgress();toast("Peso registrado! ⚖️");
+}
+function renderHistory(){
+ const h=S.history;document.getElementById("history").innerHTML=h.length?h.map(x=>`<div class="historyitem"><div><b>${x.day}</b><span>${x.goal} • ${x.records.length} séries</span></div><span>${new Date(x.date).toLocaleDateString("pt-BR")}</span></div>`).join(""):'<div class="empty">Nenhum treino registrado ainda.</div>';
+}
+function clearHistory(){if(confirm("Apagar todo o histórico?")){S.history=[];save();renderHistory();renderProgress();toast("Histórico apagado")}}
+function exportData(){const b=new Blob([JSON.stringify(S,null,2)],{type:"application/json"}),u=URL.createObjectURL(b),a=document.createElement("a");a.href=u;a.download="montatreino-backup.json";a.click();URL.revokeObjectURL(u)}
+function importData(){const i=document.createElement("input");i.type="file";i.accept=".json";i.onchange=()=>{const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{S=JSON.parse(r.result);migrateState();save();setupOnboarding();renderProfileSummary();renderPlan();renderProgress();renderHistory();renderExercises();if(S.onboarded)hideInicioAfterCadastro();toast("Backup importado")}catch(e){toast("Arquivo inválido")}};r.readAsText(f)};i.click()}
+function openSettings(){
+ const p=S.profile||{};
+ document.getElementById("settings").classList.add("open");
+ document.getElementById("rest").value=S.rest;
+ const vals={set_name:p.name||"",set_age:p.age||"",set_weight:p.weight||"",set_height:p.height||"",set_level:p.level||"Iniciante",set_goal:p.goal||"Hipertrofia",set_days:p.days||3,set_time:p.time||60};
+ Object.entries(vals).forEach(([id,v])=>{const el=document.getElementById(id);if(el)el.value=v});
+ ["set_place","set_equipment","set_focus"].forEach(id=>document.querySelectorAll("#"+id+" .chip").forEach(c=>c.classList.remove("on")));
+ document.querySelectorAll("#set_place .chip").forEach(c=>c.classList.toggle("on",c.dataset.v===(p.place||"Academia")));
+ (p.equipment||[]).forEach(v=>document.querySelectorAll("#set_equipment .chip").forEach(c=>{if(c.dataset.v===v)c.classList.add("on")}));
+ (p.focus||[]).forEach(v=>document.querySelectorAll("#set_focus .chip").forEach(c=>{if(c.dataset.v===v)c.classList.add("on")}));
+}
+function closeSettings(){document.getElementById("settings").classList.remove("open")}
+function saveSettings(){S.rest=+document.getElementById("rest").value;save();closeSettings();toast("Configurações salvas")}
+
+function hideInicioAfterCadastro(){
+ const nav=document.querySelector('.nav');
+ const inicio=document.querySelector('.nav button[data-v="inicio"]');
+ const view=document.getElementById("v-inicio");
+ if(inicio)inicio.style.display="none";
+ if(nav)nav.classList.add("compact");
+ if(view)view.style.display="none";
+ if(document.querySelector('.nav button[data-v="treino"]'))show("treino");
+}
+function recordBodyWeight(){
+ const w=+S.profile.weight||0;if(!w)return;
+ const today=new Date().toISOString().slice(0,10);
+ S.weightHistory=S.weightHistory||[];
+ const last=S.weightHistory[0];
+ if(!last||last.date!==today||Math.abs(last.weight-w)>0.001)S.weightHistory.unshift({date:today,weight:w});
+ S.weightHistory=S.weightHistory.slice(0,180);
+}
+function saveProfileSettings(){
+ const name=document.getElementById("set_name").value.trim(),age=document.getElementById("set_age").value;
+ const weight=document.getElementById("set_weight").value;
+ if(!name||!age||!weight){toast("Preencha nome, idade e peso corporal para continuar");return}
+ S.profile={...S.profile,name,age,weight,height:document.getElementById("set_height").value,level:document.getElementById("set_level").value,goal:document.getElementById("set_goal").value,days:+document.getElementById("set_days").value,time:+document.getElementById("set_time").value,place:[...document.querySelectorAll("#set_place .chip.on")].map(x=>x.dataset.v)[0]||"Academia",equipment:normalizeEquipment([...document.querySelectorAll("#set_equipment .chip.on")].map(x=>x.dataset.v)),focus:[...document.querySelectorAll("#set_focus .chip.on")].map(x=>x.dataset.v)};
+ S.onboarded=true;recordBodyWeight();save();load();renderProfileSummary();renderPlan();hideInicioAfterCadastro();closeSettings();toast("Perfil atualizado! 💪");
+}
+
+function finishOnboarding(){
+ const name=document.getElementById("on_name").value.trim(),age=document.getElementById("on_age").value,weight=document.getElementById("on_weight").value;
+ if(!name||!age||!weight){toast("Preencha nome, idade e peso corporal para continuar");return}
+ S.profile={name,age,weight,height:document.getElementById("on_height").value,level:document.getElementById("on_level").value,goal:document.getElementById("on_goal").value,days:+document.getElementById("on_days").value,time:+document.getElementById("on_time").value,place:[...document.querySelectorAll("#on_place .chip.on")].map(x=>x.dataset.v)[0]||"Academia",equipment:normalizeEquipment([...document.querySelectorAll("#on_equipment .chip.on")].map(x=>x.dataset.v)),focus:[...document.querySelectorAll("#on_focus .chip.on")].map(x=>x.dataset.v)};
+ S.onboarded=true;recordBodyWeight();save();document.getElementById("onboarding").style.display="none";load();renderProfileSummary();hideInicioAfterCadastro();toast("Cadastro concluído! 🎉");
+ openSettings();
+}
+
+function setupOnboarding(){
+ if(S.onboarded){const nav=document.querySelector(".nav");if(nav)nav.classList.add("compact");const inicio=document.querySelector(".nav button[data-v=\"inicio\"]");if(inicio)inicio.style.display="none";}
+ document.querySelectorAll("#on_place .chip,#on_equipment .chip,#on_focus .chip,#set_place .chip,#set_equipment .chip,#set_focus .chip").forEach(c=>c.onclick=()=>c.classList.toggle("on"));
+ if(S.onboarded){document.getElementById("onboarding").style.display="none";return}
+ const p=S.profile||{};document.getElementById("on_name").value=p.name||"";document.getElementById("on_age").value=p.age||"";document.getElementById("on_height").value=p.height||"";document.getElementById("on_level").value=p.level||"Iniciante";document.getElementById("on_goal").value=p.goal||"Hipertrofia";document.getElementById("on_days").value=p.days||3;document.getElementById("on_time").value=p.time||60;
+}
+function renderProfileSummary(){
+ const p=S.profile||{},a=[p.name,p.age?p.age+" anos":null,p.weight?p.weight+" kg":null,p.height?p.height+" cm":null,p.goal,p.level,p.days?p.days+"x/semana":null].filter(Boolean),e=document.getElementById("profilePills");
+ if(e)e.innerHTML=a.map(x=>`<span class="pill">${x}</span>`).join("");
+}
+function migrateState(){
+ S=S&&typeof S==='object'?S:{};
+ S.profile=S.profile&&typeof S.profile==='object'?S.profile:{};
+ const defaults={name:'',age:'',weight:'',height:'',level:'Iniciante',goal:'Hipertrofia',days:3,time:60,place:'Academia',equipment:['Pesos','Máquinas'],focus:[]};
+ S.profile={...defaults,...S.profile};
+ S.profile.days=Math.min(6,Math.max(2,+S.profile.days||3));
+ S.profile.time=Math.max(30,+S.profile.time||60);
+ S.profile.equipment=normalizeEquipment(S.profile.equipment);
+ S.profile.focus=Array.isArray(S.profile.focus)?S.profile.focus:[];
+ S.history=Array.isArray(S.history)?S.history:[];
+ S.weightHistory=Array.isArray(S.weightHistory)?S.weightHistory:[];
+ S.rest=Math.max(45,+S.rest||60);
+ // Backward compatibility: old state could have been marked onboarded without a required weight.
+ if(S.onboarded && (!S.profile.name||!S.profile.age||!S.profile.weight)) S.onboarded=false;
+ return S;
+}
+function validateProfile(){
+ const p=S.profile||{};
+ const age=+p.age, weight=+p.weight, height=p.height===''?0:+p.height;
+ if(!p.name||!age||age<12||age>100||!weight||weight<25||weight>300)return false;
+ if(height && (height<100||height>250))return false;
+ return true;
+}
+function load(){
+ const p=S.profile;
+ [["name",p.name],["age",p.age],["level",p.level],["goal",p.goal],["days",p.days],["time",p.time]].forEach(([id,v])=>document.getElementById(id).value=v);
+ document.querySelectorAll("#place .chip").forEach(c=>c.classList.toggle("on",c.dataset.v===p.place));
+ document.querySelectorAll("#equipment .chip").forEach(c=>c.classList.toggle("on",normalizeEquipment(p.equipment).includes(c.dataset.v)));
+ document.querySelectorAll("#focus .chip").forEach(c=>c.classList.toggle("on",p.focus.includes(c.dataset.v)));
+}
+migrateState(); load(); if(!S.onboarded&&validateProfile())S.onboarded=true; save(); setupOnboarding(); renderProfileSummary(); renderPlan(); renderProgress(); renderHistory(); renderExercises(); if(S.onboarded)hideInicioAfterCadastro();
+
+let deferredInstallPrompt=null;
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredInstallPrompt=e;const b=document.getElementById("installAppBtn");if(b)b.style.display="block";});
+async function installMontaTreino(){
+ if(deferredInstallPrompt){deferredInstallPrompt.prompt();await deferredInstallPrompt.userChoice;deferredInstallPrompt=null;const b=document.getElementById("installAppBtn");if(b)b.style.display="none";return;}
+ if(window.matchMedia("(display-mode: standalone)").matches){toast("O MontaTreino já está instalado como app ✓");return;}
+ toast(location.protocol==="file:"||location.protocol==="content:"?"Abra o MontaTreino por um endereço HTTPS para instalar como app.":"No Chrome, use ⋮ → Adicionar à tela inicial.");
+}
+window.addEventListener("appinstalled",()=>{const b=document.getElementById("installAppBtn");if(b)b.style.display="none";toast("MontaTreino instalado! 🚀")});
+window.addEventListener("load",()=>{if("serviceWorker" in navigator && (location.protocol==="http:"||location.protocol==="https:")) navigator.serviceWorker.register("./sw.js").catch(()=>{});});
+</script>
+</body>
+</html>
